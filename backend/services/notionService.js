@@ -51,7 +51,18 @@ async function createProblem(parentId, title) {
         object: "block",
         type: "toggle",
         toggle: {
-          rich_text: [{ type: "text", text: { content: title } }]
+          rich_text: [
+            {
+              type: "text",
+              text: {
+                content: title,
+                link: {
+                  // 🔥 HARDCODED FOR NOW
+                  url: "https://leetcode.com/problems/two-sum" //when scraped use data.link
+                }
+              }
+            }
+          ]
         }
       }
     ]
@@ -84,6 +95,23 @@ function bulletList(items) {
   }));
 }
 
+// Helper to find existing pattern toggle
+async function findPatternBlock(pattern) {
+  try {
+    const res = await notion.blocks.children.list({ block_id: PAGE_ID });
+
+    const found = res.results.find(block => {
+      const txt = block.toggle?.rich_text?.[0]?.plain_text || "";
+      return txt.toLowerCase() === pattern.toLowerCase();
+    });
+
+    return found ? found.id : null;
+  } catch (err) {
+    console.log("Pattern search failed:", err.message);
+    return null;
+  }
+}
+
 // MAIN FUNCTION
 async function sendToNotion(data) {
   let patternId;
@@ -91,27 +119,84 @@ async function sendToNotion(data) {
   if (cache.has(data.pattern)) {
     patternId = cache.get(data.pattern);
   } else {
-    patternId = await createPattern(data.pattern);
+    const existing = await findPatternBlock(data.pattern);
+
+    if (existing) {
+      patternId = existing;
+    } else {
+      patternId = await createPattern(data.pattern);
+    }
+
     cache.set(data.pattern, patternId);
   }
 
   const problemId = await createProblem(patternId, data.title);
 
-  const blocks = [
-    text("🧠 Summary", data.ai.summary),
-    text("💡 Intuition", data.ai.intuition),
-    text("🪜 Approach", data.ai.approachBreakdown),
-    text("⚠️ Mistake", data.ai.mistakeAnalysis),
-    ...bulletList(  Array.isArray(data.ai.revisionNotes)
-    ? data.ai.revisionNotes
-    : [data.ai.revisionNotes])
-  ];
+const blocks = [
+
+  heading("🧠 Summary"),
+  text("", data.ai.summary),
+
+  heading("💡 Intuition"),
+  text("", data.ai.intuition),
+
+  heading("🪜 Approach"),
+  ...bulletList(splitSteps(data.ai.approachBreakdown)),
+
+  heading("⚠️ Mistake"),
+  text("", data.ai.mistakeAnalysis),
+
+  heading("📌 Revision Notes"),
+  ...bulletList(
+    Array.isArray(data.ai.revisionNotes)
+      ? data.ai.revisionNotes
+      : [data.ai.revisionNotes]
+  ),
+
+  heading("💻 Code"),
+  codeBlock(data.code)
+];
 
   await notion.blocks.children.append({
     block_id: problemId,
     children: blocks
   });
   console.log("Sending to Notion:", data.title);
+}
+
+function heading(text) {
+  return {
+    object: "block",
+    type: "heading_3",
+    heading_3: {
+      rich_text: [{ type: "text", text: { content: text } }]
+    }
+  };
+}
+
+function splitSteps(text) {
+  if (!text) return [];
+
+  return text
+    .split(/\d+\.\s+/) // handles "1. ... 2. ..." inline
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+function codeBlock(code) {
+  return {
+    object: "block",
+    type: "code",
+    code: {
+      language: "javascript",
+      rich_text: [
+        {
+          type: "text",
+          text: { content: code || "" }
+        }
+      ]
+    }
+  };
 }
 
 module.exports = { sendToNotion };
