@@ -49,7 +49,7 @@ async function handleScrape(payload = {}) {
     code = Array.from(lines).map(line => line.innerText).join("\n");
   }
 
-  // 🔥 merge stored + incoming payload
+  //  merge stored + incoming payload
   const stored = await chrome.storage.local.get(["tempApproach", "tempMistakes"]);
 
   const approach = payload.approach || stored.tempApproach || "";
@@ -64,7 +64,7 @@ async function handleScrape(payload = {}) {
 
   return { title, tags, code, approach, mistakes };
 }
-
+ 
 // -------------------- AUTO FLOW --------------------
 async function onSubmissionDetected() {
   console.log("🚀 Running auto scrape");
