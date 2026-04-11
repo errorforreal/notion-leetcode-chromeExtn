@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+        color: #fff;
+        padding: 15px;
+        width: 300px;
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 80px;
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 8px;
+        border: none;
+        resize: none;
+        font-size: 14px;
+      }
+
+      textarea:focus {
+        outline: none;
+        box-shadow: 0 0 5px #00c6ff;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.1s ease;
+      }
+
+      button:hover {
+        transform: scale(1.05);
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Save Note</h2>
+
+    <textarea id="approach" placeholder="Your approach..."></textarea>
+    <textarea id="mistakes" placeholder="Mistakes / learnings..."></textarea>
+
+    <button id="save">Save</button>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
