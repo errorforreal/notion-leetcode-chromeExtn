@@ -10,6 +10,7 @@ app.use(express.json());
 
 const { getPattern } = require("./utils/patternMap");
 const { generateNotes } = require("./services/aiService");
+const { sendToNotion } = require("./services/notionService");
 // test route
 app.get("/", (req, res) => {
   res.send("Backend running ");
@@ -36,6 +37,12 @@ app.post("/api/save", async (req, res) => {
       pattern,
       ai
     };
+
+    await sendToNotion({
+        ...data,
+        pattern,
+        ai
+        });
 
     console.log("FINAL DATA:", finalData);
 
