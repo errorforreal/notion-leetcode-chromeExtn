@@ -3,61 +3,13 @@ let lastResult = null;
 // -------------------- SCRAPER --------------------
 
 
-// function waitForElement(selector, timeout = 7000) {
-//     return new Promise((resolve) => {
-//       const interval = setInterval(() => {
-//         const el = document.querySelector(selector);
-//         if (el) {
-//           clearInterval(interval);
-//           resolve(el);
-//         }
-//       }, 100);
-  
-//       setTimeout(() => {
-//         clearInterval(interval);
-//         resolve(null);
-//       }, timeout);
-//     });
-//   }
-
-async function getTitleFast() {
-    // 1. Try instantly
-    let el =
-      document.querySelector('[data-cy="question-title"]') ||
-      document.querySelector('div.text-title-large') ||
-      document.querySelector('h1');
-  
-    if (el) return el.innerText;
-  
-    // 2. Retry quickly (max ~500ms total)
-    for (let i = 0; i < 5; i++) {
-      await new Promise(r => setTimeout(r, 1000));
-  
-      el =
-        document.querySelector('[data-cy="question-title"]') ||
-        document.querySelector('div.text-title-large') ||
-        document.querySelector('h1');
-  
-      if (el) return el.innerText;
-    }
-  
-    return "Not Found";
-  }
 
 
 async function handleScrape(payload = {}) {
 
-    // let titleEl =
-    // (await waitForElement('[data-cy="question-title"]')) ||
-    // (await waitForElement('div.text-title-large')) ||
-    // (await waitForElement('h1'));
 
-    // const title = titleEl?.innerText || "Not Found";
+    const url = window.location.href;
 
-    const title = await getTitleFast();
-
-    // TAGS (wait properly)
-    // small buffer after title loads
 
     const tagElements = document.querySelectorAll('a[href*="/tag/"]');
 
@@ -80,13 +32,25 @@ async function handleScrape(payload = {}) {
   const mistakes = payload.mistakes || stored.tempMistakes || "";
 
   console.log("====== SCRAPED DATA ======");
-  console.log("Title:", title);
+  console.log("Url:", url);
   console.log("Tags:", tags);
   console.log("Code:", code);
   console.log("Approach:", approach);
   console.log("Mistakes:", mistakes);
 
-  return { title, tags, code, approach, mistakes };
+  await fetch("http://localhost:3000/api/save", {
+    method : "POST",
+    headers : {'Content-Type' : 'application/json'},
+    body : JSON.stringify({
+        url : url,
+        tags : tags,
+        code : code,
+        approach : approach,
+        mistakes : mistakes
+    })
+  })
+
+  return { url, tags, code, approach, mistakes };
 }
  
 // -------------------- AUTO FLOW --------------------
