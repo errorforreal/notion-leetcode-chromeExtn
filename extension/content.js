@@ -3,33 +3,7 @@ let lastResult = null;
 // -------------------- SCRAPER --------------------
 
 
-async function getTitleFast() {
-    // 1. Try instantly
-    let el =
-      document.querySelector('[data-cy="question-title"]') ||
-      document.querySelector('div.text-title-large') ||
-      document.querySelector('h1');
-  
-    if (el) return el.innerText;
-  
-    // 2. Retry quickly (max ~500ms total)
-    for (let i = 0; i < 5; i++) {
-      await new Promise(r => setTimeout(r, 1000));
-  
-      el =
-        document.querySelector('[data-cy="question-title"]') ||
-        document.querySelector('div.text-title-large') ||
-        document.querySelector('h1');
-  
-      if (el) return el.innerText;
-    }
-  
-    return "Not Found";
-  }
-
 async function handleScrape(payload = {}) {
-
-    const title = await getTitleFast();
 
     const url = window.location.href;
 
@@ -55,7 +29,6 @@ async function handleScrape(payload = {}) {
   const mistakes = payload.mistakes || stored.tempMistakes || "";
 
   console.log("====== SCRAPED DATA ======");
-  console.log("Title:", title);
   console.log("Url:", url);
   console.log("Tags:", tags);
   console.log("Code:", code);
@@ -66,14 +39,16 @@ async function handleScrape(payload = {}) {
     method : "POST",
     headers : {'Content-Type' : 'application/json'},
     body : JSON.stringify({
-        title : title,
+        title : document.title,
         url : url,
         tags : tags,
         code : code,
         approach : approach,
-        mistakes : mistakes
+        mistake : mistakes
     })
   })
+
+  
 
   return { url, tags, code, approach, mistakes };
 }

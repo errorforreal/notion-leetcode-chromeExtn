@@ -43,7 +43,7 @@ async function createPattern(pattern) {
 }
 
 // create problem toggle
-async function createProblem(parentId, title) {
+async function createProblem(parentId, title, link) {
   const res = await notion.blocks.children.append({
     block_id: parentId,
     children: [
@@ -57,8 +57,7 @@ async function createProblem(parentId, title) {
               text: {
                 content: title,
                 link: {
-                  // 🔥 HARDCODED FOR NOW
-                  url: "https://leetcode.com/problems/two-sum" //when scraped use data.link
+                  url: link || ""
                 }
               }
             }
@@ -130,7 +129,9 @@ async function sendToNotion(data) {
     cache.set(data.pattern, patternId);
   }
 
-  const problemId = await createProblem(patternId, data.title);
+    //title stuff
+  const title = data.title.replace(" - LeetCode", "");
+  const problemId = await createProblem(patternId, title, data.url);
 
 const blocks = [
 
