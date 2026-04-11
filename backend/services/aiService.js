@@ -81,7 +81,10 @@ function safeParse(text) {
       // remove ```json ``` if present
       const cleaned = text
         .replace(/```json/g, "")
-        .replace(/```/g, "")
+        .replace(/```/g, "")        
+        .replace(/\r/g, "")
+        .replace(/\n/g, "\\n")
+        .replace(/\t/g, " ")
         .trim();
 
       const start = cleaned.indexOf("{");

@@ -4,16 +4,24 @@ const notion = new Client({
   auth: process.env.NOTION_KEY
 });
 
-function formatPageId(id) {
-  return id.replace(
-    /([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})/,
-    "$1-$2-$3-$4-$5"
-  );
-}
 
-const PAGE_ID = formatPageId(process.env.NOTION_PAGE_ID);
+const PAGE_ID = process.env.NOTION_PAGE_ID;
 
 const cache = new Map();
+
+async function testAccess() {
+  try {
+    const res = await notion.blocks.retrieve({
+      block_id: PAGE_ID
+    });
+    console.log("ACCESS OK ✅", res.id);
+  } catch (err) {
+    console.log("ACCESS FAIL ❌", err?.body || err.message);
+  }
+}
+
+testAccess();
+
 
 console.log("PAGE ID USED:", PAGE_ID);
 // create pattern toggle
