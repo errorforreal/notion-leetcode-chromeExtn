@@ -3,56 +3,69 @@ const axios = require("axios");
 async function generateNotes(data) {
   try {
     const prompt = `
-You are assisting in a system that converts LeetCode problem solving into structured DSA notes stored in Notion.
+You are a DSA revision assistant.
 
-Context:
-A Chrome extension captures problem data (title, tags, approach, mistake, code) after a user solves a problem.
+Convert the given problem into structured revision notes.
 
-Your job:
-Convert the input into clean, structured notes for revision.
+Rules:
+- Be concise and fast
+- Do NOT over-explain
+- Output ONLY valid JSON
 
-Constraints:
-- Do NOT solve the problem
-- Do NOT explain code in detail
-- Keep it concise and useful for revision
-- Focus only on structuring notes
-
-Return ONLY valid JSON (no extra text):
-
+Format:
 {
-  "summary": "1-2 line concise summary of approach",
-  "intuition": "core idea behind solution in simple terms",
-  "mistakeAnalysis": "analyze mistake or write None",
-  "pattern": "best matching DSA pattern based on tags"
+  "summary": "short summary",
+  "intuition": "core idea in 3-4 lines",
+  "approachBreakdown": "stepwise explanation in brief",
+  "mistakeAnalysis": "what went wrong and fix",
+  "pattern": "DSA pattern",
+  "revisionNotes": "bullet points"
 }
 
-Input:
+INPUT:
 Problem: ${data.title}
 Tags: ${data.tags?.join(", ") || ""}
 Approach: ${data.approach}
 Mistake: ${data.mistake || "None"}
-Code: ${data.code || ""}
 `;
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      "https://api.groq.com/openai/v1/chat/completions",
       {
-        contents: [{ parts: [{ text: prompt }] }]
+        model: "llama-3.1-8b-instant",
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.3
       },
-      { timeout: 10000 }
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        timeout: 8000
+      }
     );
 
+
     const text =
-      response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    response.data?.choices?.[0]?.message?.content || "";
+
 
     const parsed = safeParse(text);
 
+
     if (!parsed) return fallback(data);
+
+    console.log("raw ai response:\n", text);
 
     return parsed;
 
   } catch (err) {
-    console.log("AI ERROR:", err.message);
+    console.log("AI ERROR:", err.response?.data || err.message);
     return fallback(data);
   }
 }
@@ -65,14 +78,22 @@ function safeParse(text) {
     return JSON.parse(text);
   } catch {
     try {
-      const start = text.indexOf("{");
-      const end = text.lastIndexOf("}");
+      // remove ```json ``` if present
+      const cleaned = text
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+      const start = cleaned.indexOf("{");
+      const end = cleaned.lastIndexOf("}");
 
       if (start === -1 || end === -1) return null;
 
-      const jsonString = text.slice(start, end + 1);
+      const jsonString = cleaned.slice(start, end + 1);
+
       return JSON.parse(jsonString);
-    } catch {
+    } catch (e) {
+      console.log("PARSE ERROR:", e.message);
       return null;
     }
   }
@@ -85,8 +106,10 @@ function fallback(data) {
   return {
     summary: data.approach || "Basic approach used",
     intuition: "Derived from approach",
+    approachBreakdown: "Followed the described approach",
     mistakeAnalysis: data.mistake || "None",
-    pattern: "General"
+    pattern: "General",
+    revisionNotes: "Revise approach and edge cases"
   };
 }
 
