@@ -46,5 +46,10 @@ window.addEventListener("DOMContentLoaded", async () => {
       payload: { approach, mistakes }
     });
 
-    window.close();
+    const status = document.getElementById("status");
+    status.style.opacity = "1";
+
+    setTimeout(() => {
+        window.close();
+      }, 1200);
   });
