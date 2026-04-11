@@ -38,17 +38,17 @@ async function handleScrape(payload = {}) {
   console.log("Approach:", approach);
   console.log("Mistakes:", mistakes);
 
-  await fetch("http://localhost:3000/api/save", {
-    method : "POST",
-    headers : {'Content-Type' : 'application/json'},
-    body : JSON.stringify({
-        url : url,
-        tags : tags,
-        code : code,
-        approach : approach,
-        mistakes : mistakes
-    })
-  })
+//   await fetch("http://localhost:3000/api/save", {
+//     method : "POST",
+//     headers : {'Content-Type' : 'application/json'},
+//     body : JSON.stringify({
+//         url : url,
+//         tags : tags,
+//         code : code,
+//         approach : approach,
+//         mistakes : mistakes
+//     })
+//   })
 
   return { url, tags, code, approach, mistakes };
 }

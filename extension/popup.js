@@ -1,5 +1,13 @@
 //  Load scraped data (auto mode)
 window.addEventListener("DOMContentLoaded", async () => {
+
+    document.getElementById("clear").addEventListener("click", () => {
+        document.getElementById("approach").value = "";
+        document.getElementById("mistakes").value = "";
+      
+        chrome.storage.local.remove(["tempApproach", "tempMistakes"]);
+      });
+
     const result = await chrome.storage.local.get("scrapedData");
   
     const data = result.scrapedData;
@@ -37,6 +45,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       type: "SAVE_NOTE",
       payload: { approach, mistakes }
     });
-  
+
     window.close();
   });

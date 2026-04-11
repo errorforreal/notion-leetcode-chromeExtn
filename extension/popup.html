@@ -2,60 +2,160 @@
 <html>
   <head>
     <style>
-      body {
-        font-family: 'Segoe UI', sans-serif;
-        background: linear-gradient(135deg, #1e1e2f, #2c2c54);
-        color: #fff;
-        padding: 15px;
-        width: 300px;
+      * {
+        box-sizing: border-box;
       }
 
-      h2 {
-        text-align: center;
-        margin-bottom: 10px;
+      body {
+        margin: 0;
+        width: 340px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #0b0f19;
+        color: #e2e8f0;
+      }
+
+      .wrapper {
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      /* Top Bar */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #94a3b8;
+      }
+
+      /* Card */
+      .card {
+        background: #020617;
+        border: 1px solid #1e293b;
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: border 0.2s ease;
+      }
+
+      .card:hover {
+        border: 1px solid #334155;
+      }
+
+      /* Section */
+      .section {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .label {
+        font-size: 11px;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
       textarea {
         width: 100%;
-        height: 80px;
-        margin-bottom: 10px;
-        padding: 8px;
+        min-height: 70px;
+        padding: 10px;
         border-radius: 8px;
-        border: none;
+        border: 1px solid #1e293b;
+        background: #020617;
+        color: #e2e8f0;
+        font-size: 13px;
         resize: none;
-        font-size: 14px;
+        transition: all 0.2s ease;
       }
 
       textarea:focus {
         outline: none;
-        box-shadow: 0 0 5px #00c6ff;
+        border: 1px solid #6366f1;
+        background: #020617;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
       }
 
-      button {
-        width: 100%;
-        padding: 10px;
-        border: none;
+      /* Action Bar */
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 9px;
         border-radius: 8px;
-        background: linear-gradient(135deg, #00c6ff, #0072ff);
-        color: white;
-        font-weight: bold;
+        font-size: 12px;
+        font-weight: 500;
+        border: none;
         cursor: pointer;
-        transition: transform 0.1s ease;
+        transition: all 0.2s ease;
       }
 
-      button:hover {
-        transform: scale(1.05);
+      .primary {
+        background: #6366f1;
+        color: white;
+      }
+
+      .primary:hover {
+        background: #4f46e5;
+        transform: translateY(-1px);
+      }
+
+      .ghost {
+        background: transparent;
+        border: 1px solid #1e293b;
+        color: #94a3b8;
+      }
+
+      .ghost:hover {
+        border-color: #334155;
+        color: #e2e8f0;
+      }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        font-size: 10px;
+        color: #475569;
       }
     </style>
   </head>
 
   <body>
-    <h2>Save Note</h2>
+    <div class="wrapper">
 
-    <textarea id="approach" placeholder="Your approach..."></textarea>
-    <textarea id="mistakes" placeholder="Mistakes / learnings..."></textarea>
+      <div class="topbar">
+        <div>LeetNote</div>
+      </div>
 
-    <button id="save">Save</button>
+      <div class="card">
+
+        <div class="section">
+          <div class="label">Approach</div>
+          <textarea id="approach" placeholder="Break down your thinking..."></textarea>
+        </div>
+
+        <div class="section">
+          <div class="label">Mistakes</div>
+          <textarea id="mistakes" placeholder="Edge cases? Missed logic?"></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn ghost" id="clear">Clear</button>
+          <button class="btn primary" id="save">Save</button>
+        </div>
+
+      </div>
+
+      <div class="footer">captured after submission</div>
+
+    </div>
 
     <script src="popup.js"></script>
   </body>
