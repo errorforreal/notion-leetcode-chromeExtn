@@ -42,10 +42,30 @@ async function handleScrape(payload = {}) {
     const approach = payload.approach || stored.tempApproach || "";
     const mistakes = payload.mistakes || stored.tempMistakes || "";
 
-    console.log("====== SCRAPED DATA ======");
-    console.log({ url, tags, code, approach, mistakes });
+console.log("====== SCRAPED DATA ======");
+console.log({ url, tags, code, approach, mistakes });
 
-    return { url, tags, code, approach, mistakes };
+// 🔥 SEND TO BACKEND
+try {
+  await fetch("http://localhost:3000/api/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: document.title.replace(" - LeetCode", ""),
+      url,
+      tags,
+      code,
+      approach,
+      mistake: mistakes
+    })
+  });
+
+  console.log("✅ Sent to backend");
+} catch (err) {
+  console.log("❌ Failed to send to backend", err);
+}
+
+return { url, tags, code, approach, mistakes };
   } catch (err) {
     console.log("🔥 handleScrape crashed safely:", err);
     return null;
