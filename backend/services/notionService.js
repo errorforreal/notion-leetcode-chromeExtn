@@ -134,12 +134,19 @@ async function sendToNotion(data) {
   const problemId = await createProblem(patternId, title, data.url);
 
 const blocks = [
+    
+    heading("Approach"),
+     text("", data.approach),
+   
+   heading("Mistake"),
+     text("", data.mistake),
 
   heading("🧠 Summary"),
   text("", data.ai.summary),
 
   heading("💡 Intuition"),
   text("", data.ai.intuition),
+
 
   heading("🪜 Approach"),
   ...bulletList(splitSteps(data.ai.approachBreakdown)),

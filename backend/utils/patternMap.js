@@ -7,6 +7,7 @@ function getPattern(tags) {
   if (tags.includes("Graph")) return "Graph";
   if (tags.includes("Tree")) return "Tree";
   if (tags.includes("Array")) return "Array";
+  if (tags.includes("Linked List")) return "Linked List";
 
   return "General";
 }
