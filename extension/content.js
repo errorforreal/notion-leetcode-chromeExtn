@@ -1,74 +1,103 @@
 let lastResult = null;
 
 // -------------------- SCRAPER --------------------
-
-
 async function handleScrape(payload = {}) {
+  try {
+    // 🔥 extension may be dead — guard early
+    if (!chrome || !chrome.runtime || !chrome.runtime.id) {
+      console.log("⚠️ Extension not active, abort scrape");
+      return null;
+    }
 
     const url = window.location.href;
 
-
+    // tags
     const tagElements = document.querySelectorAll('a[href*="/tag/"]');
-
     const tags = Array.from(tagElements)
-    .map(tag => tag.innerText)
-    .filter(t => t.length > 0);
+      .map(tag => tag.innerText)
+      .filter(t => t.length > 0);
 
-  let code = "";
-  const editor = document.querySelector(".monaco-editor");
+    // code
+    let code = "";
+    const editor = document.querySelector(".monaco-editor");
 
-  if (editor) {
-    const lines = editor.querySelectorAll(".view-lines > div");
-    code = Array.from(lines).map(line => line.innerText).join("\n");
+    if (editor) {
+      const lines = editor.querySelectorAll(".view-lines > div");
+      code = Array.from(lines).map(line => line.innerText).join("\n");
+    }
+
+    // 🔥 safe storage read
+    let stored = {};
+    try {
+      if (chrome && chrome.runtime && chrome.runtime.id) {
+        stored = await chrome.storage.local.get([
+          "tempApproach",
+          "tempMistakes"
+        ]);
+      }
+    } catch (err) {
+      console.log("⚠️ Extension context invalidated (storage)");
+    }
+
+    const approach = payload.approach || stored.tempApproach || "";
+    const mistakes = payload.mistakes || stored.tempMistakes || "";
+
+    console.log("====== SCRAPED DATA ======");
+    console.log({ url, tags, code, approach, mistakes });
+
+    return { url, tags, code, approach, mistakes };
+  } catch (err) {
+    console.log("🔥 handleScrape crashed safely:", err);
+    return null;
   }
-
-  //  merge stored + incoming payload
-  const stored = await chrome.storage.local.get(["tempApproach", "tempMistakes"]);
-
-  const approach = payload.approach || stored.tempApproach || "";
-  const mistakes = payload.mistakes || stored.tempMistakes || "";
-
-  console.log("====== SCRAPED DATA ======");
-  console.log("Url:", url);
-  console.log("Tags:", tags);
-  console.log("Code:", code);
-  console.log("Approach:", approach);
-  console.log("Mistakes:", mistakes);
-
-  await fetch("http://localhost:3000/api/save", {
-    method : "POST",
-    headers : {'Content-Type' : 'application/json'},
-    body : JSON.stringify({
-        title : document.title,
-        url : url,
-        tags : tags,
-        code : code,
-        approach : approach,
-        mistake : mistakes
-    })
-  })
-
-  
-
-  return { url, tags, code, approach, mistakes };
 }
- 
+
 // -------------------- AUTO FLOW --------------------
 async function onSubmissionDetected() {
   console.log("🚀 Running auto scrape");
 
-  const data = await handleScrape({});
+  // 🔥 open popup instantly
+  try {
+    if (chrome?.runtime?.id) {
+      chrome.runtime.sendMessage({ type: "OPEN_POPUP" });
+    }
+  } catch (err) {
+    console.log("⚠️ Popup not ready");
+  }
 
-  chrome.runtime.sendMessage({
-    type: "OPEN_POPUP",
-    payload: data
-  });
+  let data = null;
+
+  try {
+    // 🔥 small delay → DOM stabilizes
+    await new Promise(res => setTimeout(res, 300));
+
+    data = await handleScrape({});
+  } catch (err) {
+    console.log("⚠️ Scrape failed:", err);
+    return;
+  }
+
+  if (!data) return;
+
+  // 🔥 send scraped data (if popup alive)
+  try {
+    if (chrome?.runtime?.id) {
+      chrome.runtime.sendMessage({
+        type: "SCRAPED_DATA",
+        payload: data
+      });
+    }
+  } catch (err) {
+    console.log("⚠️ No receiver for data");
+  }
 }
 
 // -------------------- OBSERVER --------------------
 function observeSubmission() {
   const observer = new MutationObserver(() => {
-    const resultEl = document.querySelector('[data-e2e-locator="submission-result"]');
+    const resultEl = document.querySelector(
+      '[data-e2e-locator="submission-result"]'
+    );
     if (!resultEl) return;
 
     const text = resultEl.innerText;
@@ -84,6 +113,8 @@ function observeSubmission() {
       lastResult = currentResult;
 
       console.log("✅ Submission detected:", currentResult);
+
+      observer.disconnect(); // 🔥 stop duplicate triggers
 
       onSubmissionDetected();
     }

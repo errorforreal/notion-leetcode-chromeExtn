@@ -20,12 +20,9 @@ app.get("/", (req, res) => {
 app.post("/api/save", async (req, res) => {
   try {
     const data = req.body;
-
     const tags = data.tags || ["Array", "HashMap"]; // 👈 fallback
-
     const pattern = getPattern(tags);
     
-
     const ai = await generateNotes({
       ...data,
       tags
