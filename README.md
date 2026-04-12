@@ -1,7 +1,7 @@
-# 🚀 LeetNode — LeetCode to Notion Auto DSA Workspace
+# 🚀 LeetNote — LeetCode to Notion Auto DSA Workspace
 
 ## 📌 Overview
-LeetNode is a Chrome Extension + Backend system that automatically converts solved LeetCode problems into **structured, revision-ready notes** inside Notion.
+LeetNote is a Chrome Extension + Backend system that automatically converts solved LeetCode problems into **structured, revision-ready notes** inside Notion.
 
 It removes the friction of manual note-taking and helps developers **retain patterns, track mistakes, and build long-term understanding**.
 
@@ -19,7 +19,7 @@ Developers solve hundreds of DSA problems, but:
 ---
 
 ## 💡 Solution
-LeetNode bridges this gap by:
+LeetNote bridges this gap by:
 - Capturing problem data directly from LeetCode
 - Allowing quick user input (approach + mistake)
 - Automatically generating structured notes
@@ -110,7 +110,7 @@ LeetNode delivers:
 
 ## 🏁 Conclusion
 
-LeetNode is not just a tool — it’s a **learning system**.
+LeetNote is not just a tool — it’s a **learning system**.
 
 It transforms:
 - ❌ Solving → forgetting  
