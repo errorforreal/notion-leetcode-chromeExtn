@@ -56,14 +56,6 @@ LeetNote bridges this gap by:
 
 ---
 
-## 🧠 Novelty
-
-- Combines **problem-solving + structured revision**
-- Eliminates manual note-taking effort
-- Builds a **pattern-based learning system**
-- Converts short-term solving into long-term knowledge
-
----
 
 ## 🛠️ Tech Stack
 
@@ -74,43 +66,7 @@ LeetNote bridges this gap by:
 
 ---
 
-## 🧪 Demo Flow
 
-1. Open LeetCode problem  
-2. Solve and submit  
-3. Click extension  
-4. Enter approach  
-5. Click save  
-6. Open Notion → structured note created  
-
----
-
-## 🚀 Future Enhancements
-
-- Multi-platform support (Codeforces, GFG)  
-- Spaced repetition system  
-- Performance analytics  
-- Custom dashboard (non-Notion users)  
-- AI-based pattern detection  
-
----
-
-## 🌍 Impact
-
-LeetNode delivers:
-- Structured revision without manual effort  
-- Pattern-based learning instead of random solving  
-- One-click note generation (zero friction)  
-- Continuous learning from mistakes  
-- Faster and more effective interview preparation  
-
-👉 “We turn problem-solving into a system for long-term mastery.”
-
----
-
-## 🏁 Conclusion
-
-LeetNote is not just a tool — it’s a **learning system**.
 
 It transforms:
 - ❌ Solving → forgetting  
